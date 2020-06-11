@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spmall.mappers.adminMapper">
+	
+	<!-- 카테고리 호출 -->
+	<select id="category" resultType="com.spmall.vo.CategoryVO">
+		select level, cateName, cateCode, cateCodeRef 
+		from goods_category
+		start with catecoderef is null connect by prior catecode = catecoderef
+	</select>
+	
+	<!-- 상품 등록 -->
+	<insert id="register">
+		insert into goods (gdsNum,gdsName,cateCode,gdsPrice,gdsStock,gdsDes )
+		values (goods_seq.nextval, #{gdsName}, #{cateCode}, #{gdsPrice}, #{gdsStock}, #{gdsDes} )
+	</insert>
+	
+	<!-- 상품 목록 확인 -->
+	<select id="goodslist" resultType="com.spmall.vo.GoodsVO">
+		select *
+		from goods
+		order by gdsNum desc
+	</select>
+	
+	<!-- 상품 조회 -->
+	
+<!--<select id="goodsView" resultType="com.spmall.vo.GoodsVO">
+		select *
+		from goods
+		where gdsNum = #{gdsNum}
+	</select>  --> 
+	
+	<!-- 상품조회 + 카테고리 조인 -->
+	<select id="goodsView" resultType="com.spmall.vo.GoodsViewVO">
+		select *
+		from goods g inner join goods_category c
+		    on g.catecode = c.catecode
+		where g.gdsnum = #{gdsNum}
+	</select>
+	
+	<!-- 상품수정 -->
+	<update id="goodsModify">
+		update goods
+			set
+				gdsName = #{gdsName},
+				cateCode = #{cateCode},
+				gdsPrice = #{gdsPrice},
+				gdsStock = #{gdsStock},
+				gdsDes	 = #{gdsDes}
+		where gdsNum = #{gdsNum}
+	</update>
+	
+	<!-- 상품삭제 -->
+	<delete id="goodsDelete">
+		delete from goods where gdsNum =#{gdsNum}
+	</delete>
+</mapper>
